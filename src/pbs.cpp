@@ -93,49 +93,52 @@ int main(int argc, char** argv)
 
 vector<vector<tuple<int,int>>> pymain(string& map, int k, int t, double suboptimality, std::vector<std::tuple<int, int>> agent_start_locations = {}, std::vector<std::vector<std::tuple<int, int>>> agent_goal_locations = {})
 {
-	// TODO: Update Instance load map and agents file, 
-	// Instance: Loadagentmap, loadagentlocations,etc. '
-	string agent_dummy_file = "dummy";
-	string agent_actual_file = "random-32-32-20-random-1.scen";
+	vector<vector<tuple<int, int>>> a = {};
+	cout << "HERE" << endl;
+	return a;
+	// // TODO: Update Instance load map and agents file, 
+	// // Instance: Loadagentmap, loadagentlocations,etc. '
+	// string agent_dummy_file = "dummy";
+	// string agent_actual_file = "random-32-32-20-random-1.scen";
 
-	srand((int)time(0));
-	Instance instance(map, agent_actual_file, k, agent_start_locations, agent_goal_locations);
-	srand(0);
+	// srand((int)time(0));
+	// Instance instance(map, agent_actual_file, k, agent_start_locations, agent_goal_locations);
+	// srand(0);
 
-	PBS pbs(instance, 0);
+	// PBS pbs(instance, 0);
 
-	// run
-	double runtime = 0;
-	pbs.solve(200);
+	// // run
+	// double runtime = 0;
+	// pbs.solve(200);
 
-	vector<vector<tuple<int,int>>> paths;
-	if (pbs.solution_found)
-	{
-		paths = pbs.returnPaths();
-	}
-	else
-	{
-		paths = {};
-		cout << "Unable to find solution for goals: " << endl;
-		// Print agent_start locations
-		cout << "Agent Start Locations" << endl;
-		for (std::tuple<int, int> i: agent_start_locations)
-		{
-			cout << "(" << get<0>(i) << ", " << get<1>(i) << ")" << endl;
-		}
+	// vector<vector<tuple<int,int>>> paths;
+	// if (pbs.solution_found)
+	// {
+	// 	paths = pbs.returnPaths();
+	// }
+	// else
+	// {
+	// 	paths = {};
+	// 	cout << "Unable to find solution for goals: " << endl;
+	// 	// Print agent_start locations
+	// 	cout << "Agent Start Locations" << endl;
+	// 	for (std::tuple<int, int> i: agent_start_locations)
+	// 	{
+	// 		cout << "(" << get<0>(i) << ", " << get<1>(i) << ")" << endl;
+	// 	}
 
-		cout << "Agent Goal Locations" << endl;
-		// Print agent_goal locations
-		for (int i = 0; i<agent_goal_locations.size(); i++)
-		{
-			for (int j=0; j<agent_goal_locations[i].size(); j++)
-			{
-				cout << "(" << get<0>(agent_goal_locations[i][j]) << ", " << get<1>(agent_goal_locations[i][j]) << ")" << endl;
-			}
-		}
-	}
-	pbs.clearSearchEngines();
-	return paths;
+	// 	cout << "Agent Goal Locations" << endl;
+	// 	// Print agent_goal locations
+	// 	for (int i = 0; i<agent_goal_locations.size(); i++)
+	// 	{
+	// 		for (int j=0; j<agent_goal_locations[i].size(); j++)
+	// 		{
+	// 			cout << "(" << get<0>(agent_goal_locations[i][j]) << ", " << get<1>(agent_goal_locations[i][j]) << ")" << endl;
+	// 		}
+	// 	}
+	// }
+	// pbs.clearSearchEngines();
+	// return paths;
 }
 
 
