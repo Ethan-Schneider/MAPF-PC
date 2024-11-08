@@ -1,14 +1,15 @@
-#include<boost/tokenizer.hpp>
+#include<../../boost/tokenizer.hpp>
 #include <algorithm>    // std::shuffle
 #include <random>      // std::default_random_engine
 #include <chrono>       // std::chrono::system_clock
-#include"Instance.h"
+#include"../../inc/Instance.h"
 
 int RANDOM_WALK_STEPS = 100000;
 
 Instance::Instance(const string& map_fname, const string& agent_fname,
-				   int num_of_agents, int num_of_rows, int num_of_cols, int num_of_obstacles, int warehouse_width) :
-		map_fname(map_fname), agent_fname(agent_fname), num_of_agents(num_of_agents)
+int num_of_agents, const std::vector<std::tuple<int, int>> agent_start_locations, const std::vector<std::vector<std::tuple<int, int>>> agent_goal_locations, 
+int num_of_rows, int num_of_cols, int num_of_obstacles, int warehouse_width):
+	map_fname(map_fname), agent_fname(agent_fname), num_of_agents(num_of_agents)
 {
 	bool succ = loadMap();
 	if (!succ)
@@ -26,7 +27,15 @@ Instance::Instance(const string& map_fname, const string& agent_fname,
 		}
 	}
 
-	succ = loadAgents();
+	if (!agent_start_locations.empty())
+	{
+		succ = loadAgentsLocations(agent_start_locations, agent_goal_locations);
+	}
+	else
+	{
+		succ = loadAgents();
+	}
+	
 	if (!succ)
 	{
 		if (num_of_agents > 0)
@@ -355,6 +364,26 @@ bool Instance::loadAgents()
   myfile.close();
 	return true;
 
+}
+
+bool Instance::loadAgentsLocations(std::vector<std::tuple<int, int>> agent_start_locations, std::vector<std::vector<std::tuple<int, int>>> agent_goal_locations)
+{
+	start_locations.resize(num_of_agents);
+	goal_locations.resize(num_of_agents);
+
+	for (int i = 0; i<num_of_agents; i++)
+	{
+		int num_landmarks = agent_goal_locations[i].size();
+		start_locations[i] = linearizeCoordinate(std::get<0>(agent_start_locations[i]), std::get<1>(agent_start_locations[i]));
+		goal_locations[i].resize(num_landmarks);
+
+		for (int j = 0; j<num_landmarks; j++)
+		{
+			goal_locations[i][j] = linearizeCoordinate(std::get<0>(agent_goal_locations[i][j]), std::get<1>(agent_goal_locations[i][j]));
+		}
+	}
+
+	return true;
 }
 
 

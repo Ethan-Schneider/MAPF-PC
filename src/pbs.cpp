@@ -4,7 +4,7 @@
 */
 #include <boost/program_options.hpp>
 #include <boost/tokenizer.hpp>
-#include "PBS.h"
+#include "../inc/PBS.h"
 
 /* Declare some static utility functions */
 static void usage();
@@ -57,38 +57,85 @@ int main(int argc, char** argv)
 
 	///////////////////////////////////////////////////////////////////////////
 	// load the instance
-	Instance instance(vm["map"].as<string>(), vm["agents"].as<string>(),
-					  vm["agentNum"].as<int>(),
-					  vm["rows"].as<int>(), vm["cols"].as<int>(), vm["obs"].as<int>(), vm["warehouseWidth"].as<int>());
+// 	Instance instance(vm["map"].as<string>(), vm["agents"].as<string>(),
+// 					  vm["agentNum"].as<int>(),
+// 					  vm["rows"].as<int>(), vm["cols"].as<int>(), vm["obs"].as<int>(), vm["warehouseWidth"].as<int>());
 
-	srand(vm["seed"].as<int>());
+// 	srand(vm["seed"].as<int>());
 
-	int runs = 1;
+// 	int runs = 1;
 	
-	//////////////////////////////////////////////////////////////////////
-	// initialize the solver
-	PBS pbs(instance, vm["screen"].as<int>());
-	//////////////////////////////////////////////////////////////////////
-	// run
-	double runtime = 0;
-	int min_f_val = 0;
-	for (int i = 0; i < runs; i++)
-	{
-		pbs.clear();
-		pbs.solve(vm["cutoffTime"].as<double>(), min_f_val);
-		runtime += pbs.runtime;
-		if (pbs.solution_found)
-			break;
-		min_f_val = (int) pbs.min_f_val;
-		pbs.randomRoot = true;
-	}
-	pbs.runtime = runtime;
-	if (vm.count("output"))
-		pbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
-  pbs.clearSearchEngines();
+// 	//////////////////////////////////////////////////////////////////////
+// 	// initialize the solver
+// 	PBS pbs(instance, vm["screen"].as<int>());
+// 	//////////////////////////////////////////////////////////////////////
+// 	// run
+// 	double runtime = 0;
+// 	int min_f_val = 0;
+// 	for (int i = 0; i < runs; i++)
+// 	{
+// 		pbs.clear();
+// 		pbs.solve(vm["cutoffTime"].as<double>(), min_f_val);
+// 		runtime += pbs.runtime;
+// 		if (pbs.solution_found)
+// 			break;
+// 		min_f_val = (int) pbs.min_f_val;
+// 		pbs.randomRoot = true;
+// 	}
+// 	pbs.runtime = runtime;
+// 	if (vm.count("output"))
+// 		pbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
+//   pbs.clearSearchEngines();
 
 	return 0;
 
+}
+
+vector<vector<tuple<int,int>>> pymain(string& map, int k, int t, double suboptimality, std::vector<std::tuple<int, int>> agent_start_locations = {}, std::vector<std::vector<std::tuple<int, int>>> agent_goal_locations = {})
+{
+	// TODO: Update Instance load map and agents file, 
+	// Instance: Loadagentmap, loadagentlocations,etc. '
+	string agent_dummy_file = "dummy";
+	string agent_actual_file = "random-32-32-20-random-1.scen";
+
+	srand((int)time(0));
+	Instance instance(map, agent_actual_file, k, agent_start_locations, agent_goal_locations);
+	srand(0);
+
+	PBS pbs(instance, 0);
+
+	// run
+	double runtime = 0;
+	pbs.solve(200);
+
+	vector<vector<tuple<int,int>>> paths;
+	if (pbs.solution_found)
+	{
+		paths = pbs.returnPaths();
+	}
+	else
+	{
+		paths = {};
+		cout << "Unable to find solution for goals: " << endl;
+		// Print agent_start locations
+		cout << "Agent Start Locations" << endl;
+		for (std::tuple<int, int> i: agent_start_locations)
+		{
+			cout << "(" << get<0>(i) << ", " << get<1>(i) << ")" << endl;
+		}
+
+		cout << "Agent Goal Locations" << endl;
+		// Print agent_goal locations
+		for (int i = 0; i<agent_goal_locations.size(); i++)
+		{
+			for (int j=0; j<agent_goal_locations[i].size(); j++)
+			{
+				cout << "(" << get<0>(agent_goal_locations[i][j]) << ", " << get<1>(agent_goal_locations[i][j]) << ")" << endl;
+			}
+		}
+	}
+	pbs.clearSearchEngines();
+	return paths;
 }
 
 

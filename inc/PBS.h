@@ -22,6 +22,7 @@ public:
   // used to store initial priorities
   vector<ConstraintTable> initial_constraints;
   vector<Constraint> initial_priorities;
+	vector<vector<tuple<int,int>>> returnPaths() const;
 
 private:
   void printPaths() const;

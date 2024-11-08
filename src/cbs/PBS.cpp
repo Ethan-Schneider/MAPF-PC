@@ -1,5 +1,5 @@
-#include "PBS.h"
-#include "SpaceTimeAStar.h"
+#include "../../inc/PBS.h"
+#include "../../inc/SpaceTimeAStar.h"
 #include <stack>
 
 
@@ -42,6 +42,25 @@ void PBS::printPaths() const
       }
       cout << endl;
     }
+}
+
+vector<vector<tuple<int,int>>> PBS::returnPaths() const
+{
+	vector<vector<tuple<int, int>>> agent_paths;
+
+	for (int i = 0; i < num_of_agents; i++)
+	{
+		vector<tuple<int, int>> agent_path;
+		// Unsure if this is necessary or not 
+		agent_path.reserve(1000);
+		for (int t = 0; t < paths[i]->size(); t++)
+		{
+			agent_path.push_back(std::make_tuple(search_engines[0]->instance.getRowCoordinate(paths[i]->at(t).location), search_engines[0]->instance.getColCoordinate(paths[i]->at(t).location)));
+		}
+		agent_paths.push_back(agent_path);
+	}
+
+	return agent_paths;
 }
 
 inline bool PBS::is_task_a_final_one(int task){
